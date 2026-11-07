@@ -1,0 +1,175 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Find your space{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero wrap">
+
+  <!-- LEFT SIDE: HERO CONTENT -->
+  <div class="hero-copy">
+
+    <div class="eyebrow">
+      <span class="live-dot"></span>
+      SMARTER PARKING STARTS HERE
+    </div>
+
+    <h1>
+      Parking should be the <span>easy part</span> of your journey.
+    </h1>
+
+    <p>
+      Find a space, reserve it in advance, and get a clear route
+      to your parking spot. No guesswork. No circling around.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('register') }}">
+        Find my parking <span>↗</span>
+      </a>
+
+      <a class="text-link" href="#how-it-works">
+        See how it works <span>↓</span>
+      </a>
+    </div>
+
+    <div class="trust-row">
+      <div class="avatar-stack">
+        <i>✓</i>
+        <i>⌖</i>
+        <i>↗</i>
+      </div>
+
+      <span>Simple booking · Smart routing · Less stress</span>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDE: BASEMENT PARKING IMAGE -->
+  <div class="hero-visual mall-parking-visual">
+
+    <div class="mall-parking-photo">
+
+      <img
+        src="{{ url_for('static', filename='images/parking.jpg') }}"
+        alt="Indoor shopping mall basement parking area with rows of parked cars"
+        class="mall-parking-image"
+        loading="eager"
+      >
+
+      <div class="mall-photo-label">
+        <span class="mall-label-dot"></span>
+
+        <div>
+          <strong>Basement parking</strong>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- LIVE STATISTICS -->
+<section class="stats-strip wrap">
+
+  <div>
+    <strong id="totalCount">{{ stats.total }}</strong>
+    <span>Total parking spaces</span>
+  </div>
+
+  <div>
+    <strong id="availableCount">{{ stats.available }}</strong>
+    <span>Available right now</span>
+  </div>
+
+  <div>
+    <strong id="occupancyCount">{{ stats.occupancy }}%</strong>
+    <span>Current occupancy</span>
+  </div>
+
+  <div class="strip-note">
+    <span class="live-dot"></span>
+    Availability updates as bookings change
+  </div>
+
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section wrap" id="how-it-works">
+
+  <div class="section-heading">
+
+    <div>
+      <div class="eyebrow">HOW IT WORKS</div>
+      <h2>Three steps. One less thing to worry about.</h2>
+    </div>
+
+    <p>
+      SmartPark handles the complicated bits in the background,
+      so parking feels effortless.
+    </p>
+
+  </div>
+
+  <div class="steps-grid">
+
+    <article class="step-card">
+      <span class="step-no">01</span>
+      <div class="step-icon">♙</div>
+      <h3>Tell us what you need</h3>
+      <p>
+        Choose your time, vehicle type, and any accessibility
+        or EV charging needs.
+      </p>
+    </article>
+
+    <article class="step-card featured-step">
+      <span class="step-no">02</span>
+      <div class="step-icon">⌖</div>
+      <h3>We find your space</h3>
+      <p>
+        Our system checks availability, matches your needs,
+        and finds a short route automatically.
+      </p>
+    </article>
+
+    <article class="step-card">
+      <span class="step-no">03</span>
+      <div class="step-icon">↗</div>
+      <h3>Follow your route</h3>
+      <p>
+        Get your assigned slot and a clear route from the entrance.
+        Your booking stays in your account.
+      </p>
+    </article>
+
+  </div>
+
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta wrap">
+
+  <div>
+    <div class="eyebrow light-eyebrow">
+      YOUR NEXT PARKING SPOT IS CLOSER
+    </div>
+
+    <h2>
+      Spend less time parking.<br>
+      More time where it matters.
+    </h2>
+  </div>
+
+  <a class="btn white-btn" href="{{ url_for('register') }}">
+    Get started <span>↗</span>
+  </a>
+
+</section>
+
+{% endblock %}
+```

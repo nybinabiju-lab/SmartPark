@@ -1,0 +1,217 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Admin control room{% endblock %}
+
+{% block content %}
+
+<!-- ADMIN PAGE HEADER -->
+<section class="page-head wrap">
+  <div>
+    <div class="eyebrow">SMARTPARK CONTROL ROOM</div>
+    <h1>Parking administration</h1>
+    <p>Manage the parking layout, occupancy, and road access.</p>
+  </div>
+
+  <span class="admin-pill">ADMIN ACCESS</span>
+</section>
+
+<!-- PARKING STATISTICS -->
+<section class="metric-grid wrap">
+
+  <div class="metric-card">
+    <span>Total spaces</span>
+    <strong>{{ stats.total }}</strong>
+    <small>In the parking map</small>
+  </div>
+
+  <div class="metric-card">
+    <span>Available</span>
+    <strong class="green-text">{{ stats.available }}</strong>
+    <small>Ready to reserve</small>
+  </div>
+
+  <div class="metric-card">
+    <span>Occupied</span>
+    <strong>{{ stats.occupied }}</strong>
+    <small>Marked in use</small>
+  </div>
+
+  
+  <div class="metric-card">
+    <span>Reserved</span>
+    <strong class="green-text">{{ stats.reserved }}</strong>
+    <small>Spaces with active reservations</small>
+  </div>
+
+
+</section>
+
+<!-- ADMIN CONTROLS -->
+<section class="admin-grid wrap">
+
+  <!-- ROAD NETWORK -->
+  <div class="panel">
+
+    <div class="panel-heading">
+      <div>
+        <h2>Road network</h2>
+        <p>Block a road to test alternate-route handling.</p>
+      </div>
+
+      <span class="step-pill">
+        {{ roads|length }} SEGMENTS
+      </span>
+    </div>
+
+    <div class="road-list">
+
+      {% for road in roads %}
+
+      <div class="road-row">
+
+        <div class="road-icon {% if road['blocked'] %}blocked-road{% endif %}">
+          ↔
+        </div>
+
+        <div class="road-name">
+          <strong>
+            {{ road['node_a'] }} <span>↔</span> {{ road['node_b'] }}
+          </strong>
+
+          <small>
+            {{ road['distance'] }} route units ·
+            {% if road['blocked'] %}Blocked{% else %}Open{% endif %}
+          </small>
+        </div>
+
+        <form
+          method="post"
+          action="{{ url_for('toggle_road', road_id=road['id']) }}"
+        >
+          <button
+            type="submit"
+            class="btn {% if road['blocked'] %}secondary{% else %}danger-btn{% endif %} small-btn"
+          >
+            {% if road['blocked'] %}Reopen{% else %}Block road{% endif %}
+          </button>
+        </form>
+
+      </div>
+
+      {% else %}
+
+      <p>No roads are configured yet.</p>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+  <!-- PARKING SLOT STATUS -->
+  <div class="panel">
+
+    <div class="panel-heading">
+      <div>
+        <h2>Slot status</h2>
+        <p>Manually mark spaces occupied or available.</p>
+      </div>
+    </div>
+
+    <div class="admin-slot-list">
+
+      {% for slot in slots %}
+
+      <div class="admin-slot-row">
+
+        <span class="slot-label">{{ slot['label'] }}</span>
+
+        <span class="status-chip {{ slot.status }}">
+          {{ slot.status }}
+        </span>
+
+        <form
+          method="post"
+          action="{{ url_for('toggle_slot', slot_id=slot['id']) }}"
+        >
+          <button type="submit" class="link-button">
+            Toggle status
+          </button>
+        </form>
+
+      </div>
+
+      {% else %}
+
+      <p>No parking spaces are configured yet.</p>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- RECENT RESERVATIONS -->
+<section class="panel table-panel wrap admin-recent">
+
+  <div class="panel-heading">
+    <div>
+      <h2>Recent reservations</h2>
+      <p>Latest activity across all users.</p>
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Slot</th>
+          <th>Arrival</th>
+          <th>Departure</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for r in reservations %}
+
+        <tr>
+          <td>{{ r['name'] }}</td>
+
+          <td>
+            <strong class="slot-label">{{ r['label'] }}</strong>
+          </td>
+
+          <td>{{ r['start_at'] }}</td>
+
+          <td>{{ r['end_at'] }}</td>
+
+          <td>
+            <span class="status-chip {{ r['status'] }}">
+              {{ r['status'] }}
+            </span>
+          </td>
+        </tr>
+
+        {% else %}
+
+        <tr>
+          <td colspan="5">No reservations yet.</td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+  </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,162 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Find parking{% endblock %}
+
+{% block content %}
+<section class="page-head wrap">
+    <div>
+        <div class="eyebrow">LET'S FIND YOUR SPACE</div>
+        <h1>Where do you need to park?</h1>
+        <p>Tell us a little about your trip. We'll find the best available space and calculate your route.</p>
+    </div>
+    <div class="page-icon">⌖</div>
+</section>
+
+<section class="booking-layout wrap">
+    <div class="booking-form panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Your parking details</h2>
+                <p>All fields help us make a better match.</p>
+            </div>
+            <span class="step-pill">STEP 1 OF 1</span>
+        </div>
+
+        <form method="post" class="form-stack booking-fields">
+            <div class="field-row">
+                <label>
+                    Arrival date &amp; time
+                    <input type="datetime-local" name="start_at"
+                           value="{{ default_start }}" required>
+                </label>
+
+                <label>
+                    Departure date &amp; time
+                    <input type="datetime-local" name="end_at"
+                           value="{{ default_end }}" required>
+                </label>
+            </div>
+
+            <label>
+                Choose your entrance
+                <select name="entrance" required>
+                    <option value="ENTRANCE1">Entrance 1</option>
+                    <option value="ENTRANCE2">Entrance 2</option>
+                </select>
+            </label>
+
+            <label>
+                Vehicle type
+                <select name="vehicle_type">
+                    <option value="car">Car / hatchback</option>
+                    <option value="suv">SUV / large vehicle</option>
+                    <option value="bike">Motorcycle / scooter</option>
+                </select>
+            </label>
+
+            <label>
+                How should we choose your space?
+                <select name="assignment_mode" id="assignment-mode">
+                    <option value="automatic">Find the best space for me (recommended)</option>
+                    <option value="manual">I want to choose a space</option>
+                </select>
+            </label>
+
+            <div id="manual-slot-field" hidden>
+                <label>
+                    Choose a parking space
+                    <select name="slot_id" id="slot-id">
+                        <option value="">Select a space</option>
+                        {% for slot in slots %}
+                            {% if slot.status == 'available' %}
+                                <option value="{{ slot.id }}">
+                                    {{ slot.label }}
+                                    {% if slot.accessible %} · Accessible{% endif %}
+                                    {% if slot.ev_charging %} · EV charger{% endif %}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </label>
+                <p class="form-note">
+                    The selected space is checked again for your exact time and requirements before booking.
+                </p>
+            </div>
+
+            <div class="option-card">
+                <div class="option-symbol">♿</div>
+                <div>
+                    <strong>Accessible parking</strong>
+                    <p>Prioritize an accessible space if you need one.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="accessible" value="yes">
+                    <span></span>
+                </label>
+            </div>
+
+            <div class="option-card">
+                <div class="option-symbol">⚡</div>
+                <div>
+                    <strong>EV charging required</strong>
+                    <p>Only consider spaces with an EV charger.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" name="ev" value="yes">
+                    <span></span>
+                </label>
+            </div>
+
+            <button class="btn primary full large-btn" type="submit">
+                Find my best space <span>↗</span>
+            </button>
+
+            <p class="form-note">
+                SmartPark checks availability for your time window before confirming a booking.
+            </p>
+        </form>
+    </div>
+
+    <aside class="booking-aside">
+        <div class="aside-illustration">
+            <div class="route-bubble">↗</div>
+            <div class="mini-road">
+                <div class="road-center"></div>
+                <div class="mini-car">▰</div>
+                <div class="mini-pin">●</div>
+            </div>
+        </div>
+
+        <h3>We do the thinking for you.</h3>
+        <p>
+            Behind the scenes, SmartPark filters spaces by your needs and uses
+            shortest-path routing to choose a reachable spot with a short route.
+        </p>
+
+        <div class="aside-benefit">
+            <span>✓</span>
+            <div>
+                <strong>No algorithm choices</strong>
+                <small>Just tell us what you need.</small>
+            </div>
+        </div>
+
+        <div class="aside-benefit">
+            <span>✓</span>
+            <div>
+                <strong>Route recalculation</strong>
+                <small>Blocked roads are avoided.</small>
+            </div>
+        </div>
+
+        <div class="aside-benefit">
+            <span>✓</span>
+            <div>
+                <strong>Conflict-aware booking</strong>
+                <small>Overlapping reservations are rejected.</small>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

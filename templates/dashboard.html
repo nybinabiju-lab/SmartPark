@@ -1,0 +1,253 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<section class="page-head wrap">
+    <div>
+        <h1>Welcome, {{ current_user['name'].split()[0] }}!</h1>
+        <p>Manage your bookings and check live parking availability.</p>
+    </div>
+</section>
+
+<section class="metric-grid wrap">
+    <div class="metric-card">
+        <span>Total spaces</span>
+        <strong>{{ stats.total }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Available</span>
+        <strong>{{ stats.available }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Occupied</span>
+        <strong>{{ stats.occupied }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Reserved</span>
+        <strong class="green-text">{{ stats.reserved }}</strong>
+    </div>
+</section>
+
+<section class="content-grid wrap">
+
+    <!-- PARKING LAYOUT -->
+    <div class="panel parking-layout-panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Parking layout</h2>
+                <p>View parking spaces, access roads and availability.</p>
+            </div>
+            <span class="step-pill">24 SPACES · 2 ENTRANCES</span>
+        </div>
+
+        <div class="parking-legend">
+            <span><i class="legend-dot available-dot"></i> Available</span>
+            <span><i class="legend-dot reserved-dot"></i> Reserved</span>
+            <span><i class="legend-dot occupied-dot"></i> Occupied</span>
+        </div>
+
+        <div class="parking-site-map">
+
+            <!-- TWO ENTRANCES -->
+            <div class="entrance-pair">
+                <div class="parking-entrance">
+                    <span class="entrance-icon">↓</span>
+                    <div>
+                        <strong>ENTRANCE 1</strong>
+                        <small>Main vehicle entry</small>
+                    </div>
+                </div>
+
+                <div class="parking-entrance entrance-secondary">
+                    <span class="entrance-icon">↓</span>
+                    <div>
+                        <strong>ENTRANCE 2</strong>
+                        <small>Additional vehicle entry</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-driveway">
+                <span>MAIN ACCESS ROAD</span>
+            </div>
+
+            <!-- ZONE A -->
+            <div class="parking-zone">
+                <div class="zone-label">
+                    <strong>ZONE A</strong>
+                    <span>Row A</span>
+                </div>
+
+                <div class="parking-bays">
+                    {% for slot in slots if slot['label'].startswith('A') %}
+                    <div class="parking-bay status-{{ slot['status'] }}"
+                         title="{{ slot['label'] }} — {{ slot['status'] }}">
+                        <span class="bay-label">{{ slot['label'] }}</span>
+                        <span class="bay-status">{{ slot['status']|capitalize }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="parking-road">
+                <span>↕</span> DRIVE AISLE <span>↕</span>
+            </div>
+
+            <!-- ZONE B -->
+            <div class="parking-zone">
+                <div class="zone-label">
+                    <strong>ZONE B</strong>
+                    <span>Row B</span>
+                </div>
+
+                <div class="parking-bays">
+                    {% for slot in slots if slot['label'].startswith('B') %}
+                    <div class="parking-bay status-{{ slot['status'] }}"
+                         title="{{ slot['label'] }} — {{ slot['status'] }}">
+                        <span class="bay-label">{{ slot['label'] }}</span>
+                        <span class="bay-status">{{ slot['status']|capitalize }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="parking-road">
+                <span>↕</span> DRIVE AISLE <span>↕</span>
+            </div>
+
+            <!-- ZONE C -->
+            <div class="parking-zone">
+                <div class="zone-label">
+                    <strong>ZONE C</strong>
+                    <span>Row C</span>
+                </div>
+
+                <div class="parking-bays">
+                    {% for slot in slots if slot['label'].startswith('C') %}
+                    <div class="parking-bay status-{{ slot['status'] }}"
+                         title="{{ slot['label'] }} — {{ slot['status'] }}">
+                        <span class="bay-label">{{ slot['label'] }}</span>
+                        <span class="bay-status">{{ slot['status']|capitalize }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SECONDARY ACCESS -->
+            <div class="secondary-access">
+                <span>↑</span>
+                <div>
+                    <strong>ENTRANCE 2 ACCESS</strong>
+                    <small>Illustrative secondary access connection</small>
+                </div>
+                <span>↑</span>
+            </div>
+
+            <div class="map-footer">
+                <span>↑</span> Follow the access roads to your parking zone
+            </div>
+        </div>
+
+        <p class="map-note">
+            Occupancy is based on user reports and admin updates.
+            No physical sensor or camera verification is used.
+        </p>
+    </div>
+
+    <!-- RECENT BOOKINGS AND ALERTS -->
+    <div class="side-stack">
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Recent bookings</h2>
+                    <p>Update your parking status when you arrive or leave.</p>
+                </div>
+            </div>
+
+            {% if reservations %}
+            <div class="booking-list">
+                {% for r in reservations %}
+                <div class="booking-item">
+                    <div class="booking-symbol">▦</div>
+
+                    <div class="booking-detail">
+                        <strong>Slot {{ r['label'] }}</strong>
+                        <span>From: {{ r['start_at'] }}</span>
+                        <span>Until: {{ r['end_at'] }}</span>
+                    </div>
+
+                    <div class="booking-actions">
+                        {% if r['arrived'] and r['status'] == 'confirmed' %}
+                        <span class="status-chip occupied">Occupied</span>
+                        {% else %}
+                        <span class="status-chip {{ r['status'] }}">
+                            {{ r['status']|title }}
+                        </span>
+                        {% endif %}
+
+                        {% if r['status'] == 'confirmed' %}
+                            {% if r['arrived'] %}
+                            <form method="POST"
+                                  action="{{ url_for('mark_left', reservation_id=r['id']) }}"
+                                  onsubmit="return confirm('Confirm that you have left the parking space?');">
+                                <button type="submit" class="btn primary">
+                                    I've Left
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="POST"
+                                  action="{{ url_for('mark_arrived', reservation_id=r['id']) }}"
+                                  onsubmit="return confirm('Confirm that you have arrived at the parking space?');">
+                                <button type="submit" class="btn primary">
+                                    I've Arrived
+                                </button>
+                            </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <h3>No bookings yet</h3>
+                <p>Your parking reservations will appear here.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Smart alerts</h2>
+                    <p>Recent parking status updates.</p>
+                </div>
+            </div>
+
+            {% if alerts %}
+            <div class="alert-list">
+                {% for alert in alerts %}
+                <div class="alert-item">
+                    <span class="alert-icon">●</span>
+                    <div>
+                        <p>{{ alert['message'] }}</p>
+                        <small>{{ alert['created_at'] }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No alerts yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

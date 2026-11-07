@@ -1,0 +1,111 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}SmartPark{% endblock %} · SmartPark</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <header class="topbar">
+
+        <a class="brand" href="{{ url_for('index') }}">
+            <span class="brand-mark">S</span>
+            <span>smart<span class="brand-accent">park</span></span>
+        </a>
+
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+
+            {% if current_user %}
+
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('book') }}">Find parking</a>
+                <a href="{{ url_for('reservations') }}">My bookings</a>
+                <a href="{{ url_for('alerts') }}">Alerts</a>
+
+                {% if current_user['role'] == 'admin' %}
+                    <a href="{{ url_for('admin') }}">Admin</a>
+                {% endif %}
+
+                <span class="nav-user">
+                    Hi, {{ current_user['name'].split()[0] }}
+                </span>
+
+                <a class="nav-cta subtle-cta"
+                   href="{{ url_for('logout') }}">
+                    Log out
+                </a>
+
+            {% else %}
+
+                <a href="{{ url_for('login') }}">Log in</a>
+
+                <a class="nav-cta" href="{{ url_for('register') }}">
+                    Create account <span>↗</span>
+                </a>
+
+            {% endif %}
+        </nav>
+
+    </header>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrap">
+
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        {{ message }}
+
+                        <button type="button"
+                                onclick="this.parentElement.remove()"
+                                aria-label="Dismiss">
+                            ×
+                        </button>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- PAGE CONTENT -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+
+        <div class="footer-brand">
+            <span class="brand-mark small">S</span>
+            SmartPark
+        </div>
+
+        <span>Parking made simple. Routes made smarter.</span>
+
+        <span>© {{ year }} SmartPark · Academic prototype</span>
+
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+
+</body>
+</html>
